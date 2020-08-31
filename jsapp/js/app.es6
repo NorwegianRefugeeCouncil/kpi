@@ -45,7 +45,8 @@ import FormViewTabs from './components/formViewTabs';
 import IntercomHandler from './components/intercomHandler';
 import PermValidator from './components/permissions/permValidator';
 import Modal from './components/modal';
-import {ChangePassword, AccountSettings} from './components/accountSettings';
+import AccountSettings from './components/accountSettings';
+import ChangePassword from './components/changePassword';
 import {
   t,
   assign,
@@ -113,6 +114,7 @@ class App extends React.Component {
       );
     }
 
+<<<<<<< HEAD
     var assetid = this.props.params.assetid || this.props.params.uid || null;
 
     const pageWrapperContentModifiers = [];
@@ -121,6 +123,16 @@ class App extends React.Component {
     }
     if (this.isLibrarySingle()) {
       pageWrapperContentModifiers.push('library-landing');
+=======
+    const pageWrapperModifiers = {
+      'fixed-drawer': this.state.pageState.showFixedDrawer,
+      'in-formbuilder': this.isFormBuilder(),
+      'is-modal-visible': Boolean(this.state.pageState.modal)
+    };
+
+    if (typeof this.state.pageState.modal === 'object') {
+      pageWrapperModifiers[`is-modal-${this.state.pageState.modal.type}`] = true;
+>>>>>>> 2539-sort-asset-endpoint
     }
 
     return (
@@ -139,6 +151,7 @@ class App extends React.Component {
           {!this.isFormBuilder() &&
             <div className='k-header__bar' />
           }
+<<<<<<< HEAD
 
           <bem.PageWrapper
             m={{
@@ -153,6 +166,14 @@ class App extends React.Component {
 
             { !this.isFormBuilder() &&
               <React.Fragment>
+=======
+          <bem.PageWrapper m={pageWrapperModifiers} className='mdl-layout mdl-layout--fixed-header'>
+              { this.state.pageState.modal &&
+                <Modal params={this.state.pageState.modal} />
+              }
+
+              { !this.isFormBuilder() &&
+>>>>>>> 2539-sort-asset-endpoint
                 <MainHeader assetid={assetid}/>
                 <Drawer/>
               </React.Fragment>
