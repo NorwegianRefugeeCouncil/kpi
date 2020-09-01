@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='asset',
             name='summary',
-            field=JSONField(default=dict, null=True),
+            field=JSONBField(default=dict, null=True),
         ),
         migrations.AddField(
             model_name='asset',
