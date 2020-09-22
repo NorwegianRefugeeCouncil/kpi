@@ -32,13 +32,16 @@ class Hook(models.Model):
         (BASIC_AUTH, BASIC_AUTH)
     )
 
-    asset = models.ForeignKey("kpi.Asset", related_name="hooks", on_delete=models.CASCADE)
+    asset = models.ForeignKey(
+        "kpi.Asset", related_name="hooks", on_delete=models.CASCADE)
     uid = KpiUidField(uid_prefix="h")
     name = models.CharField(max_length=255, blank=False)
     endpoint = models.CharField(max_length=500, blank=False)
     active = models.BooleanField(default=True)
-    export_type = models.CharField(choices=EXPORT_TYPE_CHOICES, default=JSON, max_length=10)
-    auth_level = models.CharField(choices=AUTHENTICATION_LEVEL_CHOICES, default=NO_AUTH, max_length=10)
+    export_type = models.CharField(
+        choices=EXPORT_TYPE_CHOICES, default=JSON, max_length=10)
+    auth_level = models.CharField(
+        choices=AUTHENTICATION_LEVEL_CHOICES, default=BASIC_AUTH, max_length=10)
     settings = JSONBField(default=dict)
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
@@ -66,7 +69,8 @@ class Hook(models.Model):
         return "%s:%s - %s" % (self.asset, self.name, self.endpoint)
 
     def get_service_definition(self):
-        mod = import_module("kobo.apps.hook.services.service_{}".format(self.export_type))
+        mod = import_module(
+            "kobo.apps.hook.services.service_{}".format(self.export_type))
         return getattr(mod, "ServiceDefinition")
 
     @property
@@ -89,7 +93,8 @@ class Hook(models.Model):
 
     def _get_totals(self):
         # TODO add some cache
-        queryset = self.logs.values("status").annotate(values_count=models.Count("status"))
+        queryset = self.logs.values("status").annotate(
+            values_count=models.Count("status"))
         queryset.query.clear_ordering(True)
 
         # Initialize totals

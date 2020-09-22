@@ -6,19 +6,14 @@
     <div class="registration--logo"><a href="/">
     {% block logo %}{{ block.super }}{% endblock %}
     </a></div>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <a href="{% url 'auth_password_reset' %}" class="registration__forgot">
-      {% trans "Forgot?" %}
-    </a>
-    <input type="submit" value="Login" class="registration__action" />
-    <input type="hidden" name="next" value="{{ next }}" />
-
-    {% if config.REGISTRATION_OPEN %}
-      <div class="registration__footer">
+    
+    
+    <div class="registration__footer">
+      login with your <a href="/oidc/authenticate">NRC Okta account</a>
+      {% if config.REGISTRATION_OPEN %}
         {% trans "or" %} <a href="{% url 'registration_register' %}">{% trans "create an account" %}</a>
-      </div>
-    {% endif %}
+      {% endif %}
+    </div>
+    
   </form>
 {% endblock %}
-

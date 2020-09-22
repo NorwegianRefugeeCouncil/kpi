@@ -3,6 +3,8 @@ set -e
 
 source /etc/profile
 
+python -m pip install mozilla-django-oidc
+
 echo 'KoBoForm initializing...'
 
 cd "${KPI_SRC_DIR}"
@@ -64,5 +66,7 @@ echo 'Cleaning up Celery PIDs...'
 rm -rf /tmp/celery*.pid
 
 echo 'KoBoForm initialization completed.'
+
+
 
 exec /usr/bin/runsvdir /etc/service

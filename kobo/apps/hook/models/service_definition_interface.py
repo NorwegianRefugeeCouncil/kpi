@@ -98,8 +98,8 @@ class ServiceDefinitionInterface(metaclass=ABCMeta):
                 # let's provide them
                 if self._hook.auth_level == Hook.BASIC_AUTH:
                     request_kwargs.update({
-                        "auth": (self._hook.settings.get("username"),
-                                 self._hook.settings.get("password"))
+                        "auth": (os.getenv("WEBHOOK_API_USERNAME"),
+                                 os.getenv("WEBHOOK_API_PASSWORD"))
                     })
 
                 ssrf_protect_options = {}
@@ -114,7 +114,8 @@ class ServiceDefinitionInterface(metaclass=ABCMeta):
                 SSRFProtect.validate(self._hook.endpoint,
                                      options=ssrf_protect_options)
 
-                response = requests.post(self._hook.endpoint, timeout=30, **request_kwargs)
+                response = requests.post(
+                    self._hook.endpoint, timeout=30, **request_kwargs)
                 response.raise_for_status()
                 self.save_log(response.status_code, response.text, True)
                 success = True
@@ -191,4 +192,5 @@ class ServiceDefinitionInterface(metaclass=ABCMeta):
         try:
             log.save()
         except Exception as e:
-            logging.error("ServiceDefinitionInterface.save_log - {}".format(str(e)), exc_info=True)
+            logging.error(
+                "ServiceDefinitionInterface.save_log - {}".format(str(e)), exc_info=True)

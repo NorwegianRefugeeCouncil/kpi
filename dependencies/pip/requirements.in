@@ -53,6 +53,7 @@ geojson-rewind
 jsonfield
 kombu
 lxml
+mozilla-django-oidc
 oauthlib
 #py-gfm # Incompatible with markdown 3.x
 psycopg2

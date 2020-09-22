@@ -23,7 +23,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(parent_dirname))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '@25)**hc^rjaiagb4#&q*84hr*uscsxwr-cv#0joiwj$))obyk')
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY', '@25)**hc^rjaiagb4#&q*84hr*uscsxwr-cv#0joiwj$))obyk')
 
 # Optionally treat proxied connections as secure.
 # See: https://docs.djangoproject.com/en/1.8/ref/settings/#secure-proxy-ssl-header.
@@ -81,7 +82,7 @@ INSTALLED_APPS = (
     'loginas',
     'webpack_loader',
     'registration',         # Order is important
-    'django.contrib.admin', # Must come AFTER registration
+    'django.contrib.admin',  # Must come AFTER registration
     'django_extensions',
     'taggit',
     'rest_framework',
@@ -99,6 +100,7 @@ INSTALLED_APPS = (
     'kobo.apps.external_integrations.ExternalIntegrationsAppConfig',
     'markdownx',
     'kobo.apps.help',
+    'mozilla_django_oidc'
 )
 
 MIDDLEWARE = [
@@ -193,6 +195,7 @@ MARKITUP_FILTER = ('markdown.markdown', {'safe_mode': False})
 # KoBoCAT also lists ModelBackend before
 # guardian.backends.ObjectPermissionBackend.
 AUTHENTICATION_BACKENDS = (
+    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
     'kpi.backends.ObjectPermissionBackend',
 )
@@ -212,7 +215,8 @@ ALLOWED_ANONYMOUS_PERMISSIONS = (
 
 # run heavy migration scripts by default
 # NOTE: this should be set to False for major deployments. This can take a long time
-SKIP_HEAVY_MIGRATIONS = os.environ.get('SKIP_HEAVY_MIGRATIONS', 'False') == 'True'
+SKIP_HEAVY_MIGRATIONS = os.environ.get(
+    'SKIP_HEAVY_MIGRATIONS', 'False') == 'True'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -233,8 +237,8 @@ django.conf.locale.LANG_INFO.update(EXTRA_LANG_INFO)
 
 LANGUAGES = [
     (lang_code, get_language_info(lang_code)['name_local'])
-        for lang_code in os.environ.get(
-            'DJANGO_LANGUAGE_CODES', 'en').split(' ')
+    for lang_code in os.environ.get(
+        'DJANGO_LANGUAGE_CODES', 'en').split(' ')
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -249,7 +253,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-CAN_LOGIN_AS = lambda request, target_user: request.user.is_superuser
+
+def CAN_LOGIN_AS(request, target_user): return request.user.is_superuser
+
 
 # Impose a limit on the number of records returned by the submission list
 # endpoint. This overrides any `?limit=` query parameter sent by a client
@@ -316,9 +322,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': [
-       'rest_framework.renderers.JSONRenderer',
-       'rest_framework.renderers.BrowsableAPIRenderer',
-       'kpi.renderers.XMLRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'kpi.renderers.XMLRenderer',
     ],
     'DEFAULT_VERSIONING_CLASS': 'kpi.versioning.APIVersioning',
 }
@@ -367,16 +373,19 @@ else:
 
 
 ''' Enketo configuration '''
-ENKETO_SERVER = os.environ.get('ENKETO_URL') or os.environ.get('ENKETO_SERVER', 'https://enketo.org')
-ENKETO_SERVER= ENKETO_SERVER + '/' if not ENKETO_SERVER.endswith('/') else ENKETO_SERVER
-ENKETO_VERSION= os.environ.get('ENKETO_VERSION', 'Legacy').lower()
+ENKETO_SERVER = os.environ.get('ENKETO_URL') or os.environ.get(
+    'ENKETO_SERVER', 'https://enketo.org')
+ENKETO_SERVER = ENKETO_SERVER + \
+    '/' if not ENKETO_SERVER.endswith('/') else ENKETO_SERVER
+ENKETO_VERSION = os.environ.get('ENKETO_VERSION', 'Legacy').lower()
 ENKETO_INTERNAL_URL = os.environ.get('ENKETO_INTERNAL_URL', ENKETO_SERVER)
 
 assert ENKETO_VERSION in ['legacy', 'express']
 ENKETO_PREVIEW_URI = 'webform/preview' if ENKETO_VERSION == 'legacy' else 'preview'
 # The number of hours to keep a kobo survey preview (generated for enketo)
 # around before purging it.
-KOBO_SURVEY_PREVIEW_EXPIRATION = os.environ.get('KOBO_SURVEY_PREVIEW_EXPIRATION', 24)
+KOBO_SURVEY_PREVIEW_EXPIRATION = os.environ.get(
+    'KOBO_SURVEY_PREVIEW_EXPIRATION', 24)
 
 ENKETO_API_TOKEN = os.environ.get('ENKETO_API_TOKEN', 'enketorules')
 # http://apidocs.enketo.org/v2/
@@ -435,7 +444,8 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
 CELERY_TASK_DEFAULT_QUEUE = "kpi_queue"
 
 if 'KOBOCAT_URL' in os.environ:
-    SYNC_KOBOCAT_XFORMS = (os.environ.get('SYNC_KOBOCAT_XFORMS', 'True') == 'True')
+    SYNC_KOBOCAT_XFORMS = (os.environ.get(
+        'SYNC_KOBOCAT_XFORMS', 'True') == 'True')
     SYNC_KOBOCAT_PERMISSIONS = (
         os.environ.get('SYNC_KOBOCAT_PERMISSIONS', 'True') == 'True')
     if SYNC_KOBOCAT_XFORMS:
@@ -449,7 +459,8 @@ if 'KOBOCAT_URL' in os.environ:
                         'expires': SYNC_KOBOCAT_XFORMS_PERIOD_MINUTES / 2. * 60},
         }
 
-CELERY_BROKER_URL = os.environ.get('KPI_BROKER_URL', 'redis://localhost:6379/1')
+CELERY_BROKER_URL = os.environ.get(
+    'KPI_BROKER_URL', 'redis://localhost:6379/1')
 
 
 ''' Django Registration configuration '''
@@ -509,7 +520,7 @@ if 'KPI_DEFAULT_FILE_STORAGE' in os.environ:
         # django-private-storage needs its own S3 configuration
         PRIVATE_STORAGE_CLASS = \
             'private_storage.storage.s3boto3.PrivateS3BotoStorage'
-            # NB.........There's intentionally no 3 here! ^
+        # NB.........There's intentionally no 3 here! ^
         AWS_PRIVATE_STORAGE_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
         # Proxy S3 through our application instead of redirecting to bucket
         # URLs with query parameter authentication
@@ -580,7 +591,7 @@ if os.environ.get('RAVEN_DSN', False):
     # https://docs.getsentry.com/hosted/clients/python/integrations/django/#integration-with-logging
     LOGGING = {
         'version': 1,
-        'disable_existing_loggers': False, # Was `True` in Sentry documentation
+        'disable_existing_loggers': False,  # Was `True` in Sentry documentation
         'root': {
             'level': 'WARNING',
             'handlers': ['sentry'],
@@ -702,3 +713,14 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 # The maximum size (in bytes) that an upload will be before it gets streamed to the file system
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760
+
+OIDC_RP_CLIENT_ID = os.environ.get('OIDC_RP_CLIENT_ID')
+OIDC_RP_CLIENT_SECRET = os.environ.get('OIDC_RP_CLIENT_SECRET')
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get(
+    'OIDC_OP_AUTHORIZATION_ENDPOINT')
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get('OIDC_OP_TOKEN_ENDPOINT')
+OIDC_OP_USER_ENDPOINT = os.environ.get('OIDC_OP_USER_ENDPOINT')
+OIDC_OP_JWKS_ENDPOINT = os.environ.get('OIDC_OP_JWKS_ENDPOINT')
+OIDC_RP_SIGN_ALGO = os.environ.get('OIDC_RP_SIGN_ALGO')
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL')
+LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL')
